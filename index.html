@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><title>축제성적표 계산기</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--ink:#0b0b0b;--ink2:#52514e;--line:#d9d8d0;--acc:#2a78d6;--bg:#fcfcfb}
+*{box-sizing:border-box}
+body{margin:0;background:#eceae4;font-family:Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif;color:var(--ink);font-size:17px;line-height:1.4}
+.app{width:780px;margin:0 auto;background:var(--bg);border:1px solid var(--line)}
+header{padding:14px 22px;border-bottom:2px solid var(--ink);display:flex;justify-content:space-between;align-items:baseline}
+h1{font-size:24px;margin:0;letter-spacing:-.02em}
+header span{font-size:17px;color:var(--ink2)}
+.in{padding:14px 22px;display:grid;grid-template-columns:1fr auto auto;gap:12px 16px;align-items:end;border-bottom:1px solid var(--line)}
+label{display:block;font-size:17px;color:var(--ink2);margin-bottom:3px}
+select,input{font:inherit;font-size:17px;padding:7px 9px;border:1px solid var(--ink2);border-radius:4px;background:#fff;color:var(--ink);width:100%}
+.dates{display:flex;gap:6px;align-items:center}.dates input{width:160px}
+.bar{padding:12px 22px;font-size:18px;border-bottom:1px solid var(--line);display:flex;gap:18px;flex-wrap:wrap}
+.bar b{font-weight:700}
+table{width:calc(100% - 44px);margin:12px 22px;border-collapse:collapse;font-size:17px}
+th{white-space:nowrap;font-weight:600;color:var(--ink2);text-align:right;padding:6px 8px;border-bottom:2px solid var(--ink);vertical-align:bottom}
+th:first-child,td:first-child{text-align:left}
+td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+td.v{font-size:21px;font-weight:700}
+td.j{text-align:left;font-size:17px;word-break:keep-all}
+td.j b{font-size:20px;margin-right:4px}
+tr.k td:first-child{font-weight:700}
+td small{display:block;font-size:17px;color:var(--ink2);font-weight:400}
+.off{padding:26px 22px;font-size:20px;font-weight:700;border-bottom:1px solid var(--line)}
+.off small{display:block;font-size:17px;font-weight:400;color:var(--ink2);margin-top:4px}
+ul.note{margin:0;padding:12px 22px 16px 40px;font-size:17px;color:var(--ink2)}
+.hide{display:none}
+</style></head><body><div class="app">
+<header><h1>축제성적표 계산기</h1><span>제주 읍면동 · 월 단위</span></header>
+<div class="in">
+ <div><label for="ev">행사</label><select id="ev"></select></div>
+ <div><label>개최 기간</label><div class="dates"><input id="s" type="text" placeholder="2025. 04. 19."><span>~</span><input id="e" type="text" placeholder="2025. 09. 20."></div></div>
+ <div><label>개최 읍면동</label><input id="dong" readonly style="width:110px"></div>
+</div>
+<div class="bar" id="bar"></div>
+<div id="off" class="off hide"></div>
+<table id="tb"><thead><tr><th></th><th>① 전년 대비</th><th>② 도 흐름 대비</th><th>③ 개최 전 기준선</th><th style="text-align:left">판정 (②)</th></tr></thead><tbody id="rows"></tbody></table>
+<ul class="note">
+ <li>상관이며 인과가 아님. 같은 동·같은 달에 열린 행사는 구분할 수 없음</li>
+ <li>매년 열리는 상설 프로그램의 ①은 「작년보다 나았나」를 잼</li>
+ <li>③ = 개최월 ② − 개최 전 기준선(개최일 없는 직전 3개월) ② 평균. 참고 칸이며 판정에 쓰지 않음</li>
+</ul></div>
+<script>
+const D={"E05": {"name": "가파도 청보리 축제", "dong": "대정읍", "start": "2025-04-01", "end": "2025-04-30", "months": 1, "prev": "미확인 (표준데이터 기준)", "visit": {"g": "−8.8%", "d": "+4.2%p", "pre": "+7.8%p", "d3": "−3.7%p", "j": "1개월 모두 평상 범위", "s": "–", "note": ""}, "spend": {"g": "−11.7%", "d": "−2.5%p", "pre": "+6.2%p", "d3": "−8.7%p", "j": "1개월 모두 평상 범위", "s": "–", "note": ""}}, "E06": {"name": "성읍마을 정의현감 행차재현", "dong": "표선면", "start": "2025-04-19", "end": "2025-09-20", "months": 5, "prev": "미확인 (표준데이터 기준)", "visit": {"g": "−5.9%", "d": "−0.5%p", "pre": "+0.7%p", "d3": "−1.1%p", "j": "5개월 모두 평상 범위", "s": "–", "note": ""}, "spend": {"g": "+10.8%", "d": "+12.0%p", "pre": "+9.2%p", "d3": "+2.8%p", "j": "5개월 중 증가 신호 1", "s": "▲", "note": ""}}, "E11": {"name": "서귀포 크루즈 페스타", "dong": "대천동", "start": "2025-08-30", "end": "2025-11-09", "months": 2, "prev": "미확인 (표준데이터 기준)", "visit": {"g": "−12.0%", "d": "−13.8%p", "pre": "+32.3%p", "d3": "−46.1%p", "j": "2개월 중 감소 신호 1", "s": "▼", "note": ""}, "spend": {"g": "+5.7%", "d": "−0.9%p", "pre": "−8.2%p", "d3": "+7.2%p", "j": "2개월 모두 평상 범위", "s": "–", "note": ""}}, "E19": {"name": "원도심 도보투어", "dong": "일도1동", "start": "2026-04-01", "end": "2026-11-30", "months": 6, "prev": "미확인 (표준데이터 기준)", "visit": {"g": "+112.2%", "d": "+114.9%p", "pre": "+217.0%p", "d3": "−102.1%p", "j": "5개월 모두 평상 범위", "s": "–", "note": ""}, "spend": {"g": "+3.3%", "d": "+3.0%p", "pre": "+12.1%p", "d3": "−9.0%p", "j": "6개월 모두 평상 범위", "s": "–", "note": ""}}, "E20": {"name": "계절이 들리는 원도심", "dong": "삼도2동", "start": "2026-04-01", "end": "2026-12-09", "months": 6, "prev": "미확인 (표준데이터 기준)", "visit": {"g": "+8.2%", "d": "+10.9%p", "pre": "+10.5%p", "d3": "+0.4%p", "j": "5개월 모두 평상 범위", "s": "–", "note": ""}, "spend": {"g": "+11.6%", "d": "+11.2%p", "pre": "+4.2%p", "d3": "+7.1%p", "j": "6개월 중 증가 신호 3", "s": "▲", "note": ""}}, "E21": {"name": "서귀포 원도심 문화페스티벌", "dong": "정방동", "start": "2026-04-11", "end": "2026-10-30", "months": 6, "prev": "아니오 (표준데이터 기준)", "visit": {"g": "−18.3%", "d": "−16.0%p", "pre": "−8.2%p", "d3": "−7.8%p", "j": "5개월 중 감소 신호 5", "s": "▼", "note": ""}, "spend": {"g": "−4.9%", "d": "−5.6%p", "pre": "−0.9%p", "d3": "−4.8%p", "j": "6개월 중 감소 신호 1", "s": "▼", "note": ""}}, "E23": {"name": "새연교 주말 새연쇼", "dong": "천지동", "start": "2026-04-25", "end": "2026-10-31", "months": 5, "prev": "아니오 (표준데이터 기준)", "visit": {"g": "−6.8%", "d": "−3.4%p", "pre": "+3.0%p", "d3": "−6.4%p", "j": "4개월 모두 평상 범위", "s": "–", "note": ""}, "spend": {"g": "+1.4%", "d": "+2.4%p", "pre": "+3.3%p", "d3": "−0.9%p", "j": "5개월 중 증가 신호 1 · 감소 신호 1", "s": "▲▼", "note": ""}}, "E24": {"name": "제주목 관아 야간개장", "dong": "삼도2동", "start": "2026-05-01", "end": "2026-10-31", "months": 5, "prev": "미확인 (표준데이터 기준)", "visit": {"g": "+6.4%", "d": "+10.3%p", "pre": "+10.5%p", "d3": "−0.3%p", "j": "4개월 모두 평상 범위", "s": "–", "note": ""}, "spend": {"g": "+12.1%", "d": "+13.2%p", "pre": "+4.2%p", "d3": "+9.0%p", "j": "5개월 중 증가 신호 3", "s": "▲", "note": ""}}, "E30": {"name": "거리예술제", "dong": "일도1동", "start": "2026-09-04", "end": "2026-11-13", "months": 1, "prev": "미확인 (표준데이터 기준)", "visit": {"g": "—", "d": "—", "pre": "—", "d3": "—", "j": "개최월 자료 없음", "s": "", "note": "방문 자료는 2026-08까지라 개최월이 없음"}, "spend": {"g": "−0.7%", "d": "+4.3%p", "pre": "기준선 없음", "d3": "—", "j": "1개월 모두 평상 범위", "s": "–", "note": ""}}, "E01": {"name": "제26회 서귀포 유채꽃 국제걷기대회", "dong": "대륜동", "start": "2025-03-22", "end": "2025-03-23", "months": 0, "short": true}};
+const ev=document.getElementById('ev');
+const order=Object.keys(D).filter(k=>!D[k].short);
+ev.innerHTML=order.map(k=>`<option value="${k}">${D[k].name.replace(/\(.*\)/,'').slice(0,26)}</option>`).join('')+`<option value="E01">단기 행사 예시: ${D.E01.name.slice(0,14)}</option>`;
+const $=id=>document.getElementById(id);
+const kr=d=>d.replace(/(\d+)-(\d+)-(\d+)/,'$1. $2. $3.');
+const iso=t=>t.replace(/\s/g,'').replace(/\.$/,'').replace(/\./g,'-');
+function row(label,sub,x){return `<tr class="k"><td>${label}<small>${sub}</small></td><td class="v">${x.g}</td><td class="v">${x.d}</td><td class="v">${x.d3}<small>${x.pre==='기준선 없음'?'기준선 없음':'기준선 ② '+x.pre}</small></td><td class="j"><b>${x.s}</b>${x.note||x.j}</td></tr>`}
+function draw(){
+ const k=ev.value,r=D[k];$('dong').value=r.dong;
+ const days=Math.round((new Date(iso($('e').value))-new Date(iso($('s').value)))/864e5)+1;
+ const small=days<28;
+ $('bar').innerHTML=`<span>기간 <b>${days}일</b></span><span>${days>=28?'28일 이상: 계산':'28일 미만'}</span>`+(r.months?`<span>개최월 <b>${r.months}개월</b></span><span>전년 같은 달 개최 <b>${r.prev}</b></span>`:'');
+ $('off').classList.toggle('hide',!small);$('tb').classList.toggle('hide',small);
+ $('off').innerHTML=small?`월 단위로는 판정하지 않음<small>28일 미만 행사는 평상월에도 보정 차이가 흔들리는 폭 안에 묻힘</small>`:'';
+ if(!small&&r.visit)$('rows').innerHTML=row('방문','관광객 방문',r.visit)+row('소비','관광객 카드',r.spend);
+}
+ev.onchange=()=>{const r=D[ev.value];$('s').value=kr(r.start);$('e').value=kr(r.end);draw()};
+$('s').onchange=$('e').onchange=draw;
+ev.value=new URLSearchParams(location.search).get('ev')||'E06';ev.onchange();
+</script></body></html>
